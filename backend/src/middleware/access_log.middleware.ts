@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import UAParser from "ua-parser-js";
+import { UAParser } from "ua-parser-js";
 
 import { IAccessHistory } from "../interfaces/access-history.interface";
 
