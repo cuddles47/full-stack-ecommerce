@@ -1,6 +1,5 @@
 import { Schema, model } from "mongoose";
 import { ISequenceDoc, ISequenceModel } from "../interfaces/sequence.interface";
-import forOwn from "lodash/forOwn";
 import { CallbackWithoutResultAndOptionalError } from "mongoose";
 
 // schema to store “auto incremental” fields

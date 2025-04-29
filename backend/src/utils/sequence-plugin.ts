@@ -1,4 +1,4 @@
-import forOwn from "lodash/forOwn";
+import { forOwn } from "lodash";
 import { CallbackWithoutResultAndOptionalError } from "mongoose";
 import { SequenceModel, SequenceSchema } from "../models/sequence.model";
 /**
