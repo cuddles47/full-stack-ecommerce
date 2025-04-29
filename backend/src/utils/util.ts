@@ -1,6 +1,5 @@
 import { Request } from "express";
 import { Gender } from "../enums/gender.enum";
-import { INormalValues } from "../interfaces/test-index.interface";
 
 export const extractTokenFromHeader = (req: Request) => {
     const authHeader =
@@ -95,34 +94,6 @@ export function formatGender(gender?: number) {
         return "Nữ";
     } else if (gender === Gender.OTHER) {
         return "Khác";
-    }
-}
-
-export function formatNormalValue(
-    gender: number,
-    dob: Date,
-    normalValues: INormalValues
-) {
-    // Tính tuổi từ ngày sinh
-    const today = new Date();
-    let age = today.getFullYear() - dob.getFullYear();
-    const monthDiff = today.getMonth() - dob.getMonth();
-
-    // Điều chỉnh tuổi nếu chưa đến sinh nhật trong năm nay
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-        age--;
-    }
-
-    // Xác định nếu là trẻ em (dưới 3 tuổi)
-    const isBaby = age < 3;
-
-    // Trả về giá trị phù hợp dựa trên tuổi và giới tính
-    if (isBaby) {
-        return normalValues.baby;
-    } else if (gender === Gender.MALE) {
-        return normalValues.man;
-    } else {
-        return normalValues.woman;
     }
 }
 
