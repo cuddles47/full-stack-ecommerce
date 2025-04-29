@@ -1,7 +1,6 @@
 import forOwn from "lodash/forOwn";
 import { CallbackWithoutResultAndOptionalError } from "mongoose";
-import { SequenceSchema, SequenceModel } from "../models/sequence.model";
-
+import { SequenceModel, SequenceSchema } from "../models/sequence.model";
 /**
  * Replaces substring of given string begin from the provided
  * start index with the "character" to be replaced
