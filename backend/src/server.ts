@@ -1,8 +1,8 @@
-process.on("unhandledRejection", r => console.error("UnhandledRejection:", r));
-process.on("uncaughtException", e => {
-  console.error("UncaughtException:", e);
-  process.exit(1);
-});
+// process.on("unhandledRejection", r => console.error("UnhandledRejection:", r));
+// process.on("uncaughtException", e => {
+//   console.error("UncaughtException:", e);
+//   process.exit(1);
+// }); // debug only
 import express, { Express } from "express";
 import { Server, createServer } from "http";
 import { logger } from "./config/logger";
