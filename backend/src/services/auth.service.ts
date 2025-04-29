@@ -34,11 +34,11 @@ export class AuthService {
 
     private generateTokens(userId: string | Types.ObjectId) {
         const accessToken = signJwt({ userId }, this.accessSecret, {
-            expiresIn: this.accessExpiration,
+            expiresIn: this.accessExpiration as jwt.SignOptions["expiresIn"],
         });
 
         const refreshToken = signJwt({ userId }, this.refreshAccessSecret, {
-            expiresIn: this.refreshAccessExpiration,
+            expiresIn: this.refreshAccessExpiration as jwt.SignOptions["expiresIn"],
         });
 
         return { accessToken, refreshToken };
