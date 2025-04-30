@@ -158,8 +158,8 @@ export class UserService {
             return {
                 id: userData._id,
                 username: userData.username,
-                status: userData.status ? 'Hoạt động' : 'Không hoạt động',
                 user_code: userData.detail_user.user_code,
+                status: userData.status ? 'Hoạt động' : 'Không hoạt động',
                 name: userData.detail_user.name,
                 dob: formatDate(userData.detail_user.dob, false),
                 address: userData.detail_user.address || '',
@@ -176,8 +176,8 @@ export class UserService {
         const fields = [
             { label: 'ID', value: 'id' },
             { label: 'Tên tài khoản', value: 'username' },
-            { label: 'Trạng thái', value: 'status' },
             { label: 'Mã nhân sự', value: 'user_code' },
+            { label: 'Trạng thái', value: 'status' },
             { label: 'Tên', value: 'name' },
             { label: 'Ảnh đại diện', value: 'avatar' },
             { label: 'Ngày sinh', value: 'dob' },

@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:20.13.0-slim AS builder
 
 WORKDIR /app
 
@@ -11,7 +11,7 @@ COPY . .
 RUN npm run build
 
 # Giai đoạn sản phẩm
-FROM node:20-alpine AS production
+FROM node:20.13.0-slim AS production
 
 WORKDIR /app
 

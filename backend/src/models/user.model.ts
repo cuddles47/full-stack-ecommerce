@@ -4,7 +4,6 @@ import { Gender } from "../enums/gender.enum";
 
 const detailSchema = new Schema<IDetailUser>(
   {
-    user_code: { type: String, required: [true, "Mã nhân sự là bắt buộc!"] },
     name: { type: String, required: [true, "Tên là bắt buộc!"] },
     avatar: { type: String },
     dob: { type: Date },
@@ -24,6 +23,13 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: [true, "Tên tài khoản là bắt buộc!"],
       unique: true,
+    },
+    email: {
+      type: String,
+      required: [true, "Email là bắt buộc!"],
+      unique: true,
+      lowercase: true,
+      trim: true,
     },
     password: {
       type: String,

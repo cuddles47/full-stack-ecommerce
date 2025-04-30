@@ -12,6 +12,7 @@ export interface IDetailUser {
 export interface IUser {
   // _id: Types.ObjectId;
   username: string;
+  email: string; // Added email field
   password: string;
   name: string;
   roles: Types.ObjectId[];

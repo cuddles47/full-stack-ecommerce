@@ -1,82 +1,96 @@
-"use client";
+'use client';
+
+import React from 'react';
 import Link from 'next/link';
-import { FaLinkedin, FaEnvelope } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaInstagram, FaYoutube, FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 
-const Footer = () => {
+export const Footer: React.FC = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="w-full">
-      {/* Portfolio notice banner */}
-      <div className="bg-blue-500 text-white py-4">
-        <div className="container mx-auto px-4 text-center">
-          <p className="mb-3">This website was created for portfolio purposes and is NOT a real business.</p>
-          <div className="flex justify-center space-x-4">
-            <Link 
-              href="https://linkedin.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="bg-white text-blue-500 py-1 px-4 rounded-md flex items-center hover:bg-gray-100 transition-colors"
-            >
-              <FaLinkedin className="mr-2" /> LinkedIn
-            </Link>
-            <Link 
-              href="mailto:contact@example.com" 
-              className="bg-white text-blue-500 py-1 px-4 rounded-md flex items-center hover:bg-gray-100 transition-colors"
-            >
-              <FaEnvelope className="mr-2" /> Email
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Main footer - có thể bổ sung thêm nếu cần */}
-      <div className="bg-gray-900 text-white py-8">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {/* Column 1 */}
-            <div>
-              <h3 className="text-lg font-bold mb-4">BitEx</h3>
-              <p className="text-sm text-gray-400">
-                Your one-stop shop for all electronics and gadgets. We offer a wide range of products at competitive prices.
-              </p>
-            </div>
-            
-            {/* Column 2 */}
-            <div>
-              <h3 className="text-lg font-bold mb-4">Shop</h3>
-              <ul className="space-y-2">
-                <li><Link href="/category/computers" className="text-sm text-gray-400 hover:text-white">Computers & Laptops</Link></li>
-                <li><Link href="/category/tablets" className="text-sm text-gray-400 hover:text-white">Tablets</Link></li>
-                <li><Link href="/category/smartphones" className="text-sm text-gray-400 hover:text-white">Smartphones</Link></li>
-                <li><Link href="/category/cameras" className="text-sm text-gray-400 hover:text-white">Cameras</Link></li>
-              </ul>
-            </div>
-            
-            {/* Column 3 */}
-            <div>
-              <h3 className="text-lg font-bold mb-4">Customer Service</h3>
-              <ul className="space-y-2">
-                <li><Link href="/contact" className="text-sm text-gray-400 hover:text-white">Contact Us</Link></li>
-                <li><Link href="/shipping" className="text-sm text-gray-400 hover:text-white">Shipping Information</Link></li>
-                <li><Link href="/returns" className="text-sm text-gray-400 hover:text-white">Returns & Exchanges</Link></li>
-                <li><Link href="/faq" className="text-sm text-gray-400 hover:text-white">FAQ</Link></li>
-              </ul>
-            </div>
-            
-            {/* Column 4 */}
-            <div>
-              <h3 className="text-lg font-bold mb-4">About</h3>
-              <ul className="space-y-2">
-                <li><Link href="/about" className="text-sm text-gray-400 hover:text-white">About Us</Link></li>
-                <li><Link href="/blog" className="text-sm text-gray-400 hover:text-white">Blog</Link></li>
-                <li><Link href="/careers" className="text-sm text-gray-400 hover:text-white">Careers</Link></li>
-                <li><Link href="/privacy" className="text-sm text-gray-400 hover:text-white">Privacy Policy</Link></li>
-              </ul>
+    <footer className="bg-gray-800 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">KIWEY</h3>
+            <p className="text-gray-300 mb-4">Chúng tôi cung cấp các sản phẩm chất lượng cao với dịch vụ khách hàng tốt nhất.</p>
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-300 hover:text-white">
+                <FaFacebook />
+              </a>
+              <a href="#" className="text-gray-300 hover:text-white">
+                <FaTwitter />
+              </a>
+              <a href="#" className="text-gray-300 hover:text-white">
+                <FaInstagram />
+              </a>
+              <a href="#" className="text-gray-300 hover:text-white">
+                <FaYoutube />
+              </a>
             </div>
           </div>
           
-          <div className="border-t border-gray-800 mt-8 pt-6 text-center text-sm text-gray-400">
-            <p>&copy; {new Date().getFullYear()} BitEx. All rights reserved.</p>
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Liên kết nhanh</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/" className="text-gray-300 hover:text-white">Trang chủ</Link>
+              </li>
+              <li>
+                <Link href="/products" className="text-gray-300 hover:text-white">Sản phẩm</Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-gray-300 hover:text-white">Giới thiệu</Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-gray-300 hover:text-white">Liên hệ</Link>
+              </li>
+            </ul>
           </div>
+          
+          {/* Account Links */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Tài khoản</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/login" className="text-gray-300 hover:text-white">Đăng nhập</Link>
+              </li>
+              <li>
+                <Link href="/register" className="text-gray-300 hover:text-white">Đăng ký</Link>
+              </li>
+              <li>
+                <Link href="/profile" className="text-gray-300 hover:text-white">Thông tin cá nhân</Link>
+              </li>
+              <li>
+                <Link href="/forgot-password" className="text-gray-300 hover:text-white">Quên mật khẩu</Link>
+              </li>
+            </ul>
+          </div>
+          
+          {/* Contact Info */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Liên hệ</h3>
+            <ul className="space-y-3">
+              <li className="flex items-start">
+                <FaMapMarkerAlt className="mt-1 mr-2" />
+                <span className="text-gray-300">123 Đường ABC, Thành phố XYZ, Việt Nam</span>
+              </li>
+              <li className="flex items-center">
+                <FaPhone className="mr-2" />
+                <span className="text-gray-300">+84 123 456 789</span>
+              </li>
+              <li className="flex items-center">
+                <FaEnvelope className="mr-2" />
+                <span className="text-gray-300">info@kiwey.com</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <div className="border-t border-gray-700 mt-8 pt-8 text-center">
+          <p className="text-gray-300">© {currentYear} KIWEY. Tất cả các quyền được bảo lưu.</p>
         </div>
       </div>
     </footer>

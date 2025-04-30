@@ -3,8 +3,10 @@ import { FilterQuery, Types } from "mongoose";
 import { BaseRepository } from "./base.repository";
 
 import { UserModel } from "../models/user.model";
+import { RoleModel } from "../models/role.model";
 
 import { IUser } from "../interfaces/user.interface";
+import { IRole } from "../interfaces/role.interface";
 
 export class UserRepository extends BaseRepository<IUser> {
     constructor() {
@@ -81,9 +83,21 @@ export class UserRepository extends BaseRepository<IUser> {
     ) {
         return this.findExtendedUser({ username }, includePassword, activeOnly);
     }
+    
+    findExtendedUserByEmail(
+        email: string,
+        includePassword: boolean = false,
+        activeOnly: boolean = false
+    ) {
+        return this.findExtendedUser({ email }, includePassword, activeOnly);
+    }
 
     findUserByUsername(username: string) {
         return UserModel.findOne({ username });
+    }
+    
+    findUserByEmail(email: string) {
+        return UserModel.findOne({ email });
     }
 
     findUserByRefreshToken(refreshToken: string) {
@@ -96,5 +110,15 @@ export class UserRepository extends BaseRepository<IUser> {
             { refresh_token: refreshToken },
             { timestamps: false }
         );
+    }
+    
+    findDefaultRole(): Promise<IRole | null> {
+        // Find a role that's marked as default or look for a basic user role
+        return RoleModel.findOne({ isDefaultForRegistration: true })
+            .then(role => {
+                if (role) return role;
+                // If no default role is marked, find a role with 'user' in the name
+                return RoleModel.findOne({ name: { $regex: /user/i } });
+            });
     }
 }

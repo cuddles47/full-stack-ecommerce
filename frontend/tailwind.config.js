@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        'timesnewroman': ['"Times New Roman"', 'serif'],
+      },
       animation: {
         'fadeIn': 'fadeIn 0.3s ease-in-out',
         'fadeDown': 'fadeDown 0.4s ease-out',

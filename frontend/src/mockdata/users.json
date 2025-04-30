@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1",
+    "username": "johndoe",
+    "email": "johndoe@example.com",
+    "detail_user": {
+      "name": "John Doe",
+      "avatar": "https://randomuser.me/api/portraits/men/1.jpg",
+      "dob": "1990-05-15",
+      "address": "123 Main Street, City",
+      "gender": 0
+    },
+    "roles": ["user"],
+    "permissions": ["view_profile", "edit_profile"]
+  },
+  {
+    "id": "2",
+    "username": "janedoe",
+    "email": "janedoe@example.com",
+    "detail_user": {
+      "name": "Jane Doe",
+      "avatar": "https://randomuser.me/api/portraits/women/1.jpg",
+      "dob": "1992-08-20",
+      "address": "456 Oak Avenue, Town",
+      "gender": 1
+    },
+    "roles": ["admin"],
+    "permissions": ["view_profile", "edit_profile", "manage_users"]
+  },
+  {
+    "id": "3",
+    "username": "mikesmith",
+    "email": "mikesmith@example.com",
+    "detail_user": {
+      "name": "Mike Smith",
+      "avatar": "https://randomuser.me/api/portraits/men/2.jpg",
+      "dob": "1985-12-10",
+      "address": "789 Pine Road, Village",
+      "gender": 0
+    },
+    "roles": ["manager"],
+    "permissions": ["view_profile", "edit_profile", "view_reports"]
+  }
+]

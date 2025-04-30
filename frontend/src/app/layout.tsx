@@ -1,16 +1,10 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
 import { Providers } from './providers';
-
-const outfitFont = localFont({
-  src: "../assets/fonts/Outfit-VariableFont.ttf",
-  fallback: ["sans-serif", "system-ui", "arial"],
-});
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "BITEX",
-  description: "Electronic Shop",
+  title: "KIWEY",
+  description: "KIWEY Application",
 };
 
 export default function RootLayout({
@@ -20,8 +14,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={outfitFont.className}>
-        <Providers>{children}</Providers>
+      <body className="font-timesnewroman">
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

@@ -5,7 +5,6 @@ user =
     "password": "hashed string",
     "status": true,
     "detail_user": {
-        "user_code": "string",
         "name": "string",
         "avatar": "string",
         "birth_day": "YYYY-MM-DD",
