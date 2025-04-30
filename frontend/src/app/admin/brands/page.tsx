@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 
-import { addBrand, deleteBrand, getAllBrands, updateBrand } from "@/actions/brands/brands";
 import Button from "@/shared/components/UI/button";
 import Input from "@/shared/components/UI/input";
 import Popup from "@/shared/components/UI/popup";

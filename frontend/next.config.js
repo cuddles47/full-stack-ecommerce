@@ -15,6 +15,8 @@ const nextConfig = {
   },
   env: {
     IMG_URL: process.env.CLOUDINARY_URL,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   },
 };
 

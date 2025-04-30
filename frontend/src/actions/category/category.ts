@@ -1,158 +1,62 @@
-"use server";
-import { z } from "zod";
+import { TCategory } from "@/shared/types/categories";
 
-import { db } from "@/shared/lib/db";
-import { TCategory, TGroupJSON } from "@/shared/types/categories";
+const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-//eslint-disable-next-line
-const GetAllCategories = z.object({
-  id: z.string(),
-  parentID: z.string().min(6).nullable(),
-  name: z.string().min(3),
-  url: z.string().min(3),
-  iconSize: z.array(z.number().int()),
-  iconUrl: z.string().min(3).nullable(),
-});
-
-const AddCategory = z.object({
-  parentID: z.string().min(6).nullable(),
-  name: z.string().min(3),
-  url: z.string().min(3),
-  iconSize: z.array(z.number().int()),
-  iconUrl: z.string().min(3).nullable(),
-});
-
-const UpdateCategory = z.object({
-  id: z.string(),
-  name: z.string().min(3).optional(),
-  url: z.string().min(3).optional(),
-  iconSize: z.array(z.number().int()),
-  iconUrl: z.string().min(3).optional(),
-});
-
-export type TGetAllCategories = z.infer<typeof GetAllCategories>;
-export type TAddCategory = z.infer<typeof AddCategory>;
-export type TUpdateCategory = z.infer<typeof UpdateCategory>;
-
-const convertToJson = (categoriesTable: TCategory[]): TGroupJSON[] => {
-  const generateCategoryGroups = (categoriesTable: TCategory[]): TGroupJSON[] => {
-    return categoriesTable.filter((tableRow) => tableRow.parentID === null).map((group) => ({ group, categories: [] }));
-  };
-
-  const fillCategoryArray = (groups: TGroupJSON[], categoriesTable: TCategory[]) => {
-    groups.forEach((group) => {
-      group.categories = getChildren(categoriesTable, group.group.id).map((category) => ({
-        category,
-        subCategories: [],
-      }));
-    });
-  };
-
-  const fillSubCategoryArray = (groups: TGroupJSON[], categoriesTable: TCategory[]) => {
-    groups.forEach((group) => {
-      group.categories.forEach((category) => {
-        category.subCategories = getChildren(categoriesTable, category.category.id);
-      });
-    });
-  };
-
-  const getChildren = (array: TCategory[], parentID: string | null): TCategory[] => {
-    return array.filter((item) => item.parentID === parentID);
-  };
-
-  const groups: TGroupJSON[] = generateCategoryGroups(categoriesTable);
-  fillCategoryArray(groups, categoriesTable);
-  fillSubCategoryArray(groups, categoriesTable);
-
-  return groups;
-};
-
-export const getAllCategories = async () => {
+export const getAllCategories = async (): Promise<{ res?: TCategory[]; error?: string }> => {
   try {
-    const result: TGetAllCategories[] = await db.category.findMany();
-
-    if (!result) return { error: "Can't read categories" };
-    return { res: result };
-  } catch {
-    return { error: "Cant read Category Groups" };
-  }
-};
-export const getAllCategoriesJSON = async () => {
-  try {
-    const result: TCategory[] = await db.category.findMany();
-
-    if (!result) return { error: "Can't read categories" };
-    return { res: convertToJson(result) };
-  } catch {
-    return { error: "Cant read Category Groups" };
-  }
-};
-
-export const addCategory = async (data: TAddCategory) => {
-  if (!AddCategory.safeParse(data).success) return { error: "Invalid Data!" };
-
-  try {
-    const result = await db.category.create({
-      data: {
-        parentID: data.parentID,
-        name: data.name,
-        url: data.url,
-        iconSize: [...data.iconSize],
-        iconUrl: data.iconUrl,
-      },
-    });
-    if (!result) return { error: "cant add to database" };
-    return { res: result };
+    const response = await fetch(`${baseUrl}/categories`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Failed fetching categories');
+    const data: TCategory[] = await response.json();
+    return { res: data };
   } catch (error) {
-    return { error: JSON.stringify(error) };
+    return { error: (error as Error).message };
   }
 };
 
-export const updateCategory = async (data: TUpdateCategory) => {
-  if (!UpdateCategory.safeParse(data).success) return { error: "Data is no valid" };
-
-  const { id, iconSize, ...values } = data;
-
+export const addCategory = async (
+  category: Omit<TCategory, 'id'>
+): Promise<{ res?: TCategory; error?: string }> => {
   try {
-    const result = await db.category.update({
-      where: {
-        id,
-      },
-      data: {
-        iconSize: [...iconSize],
-        ...values,
-      },
+    const response = await fetch(`${baseUrl}/categories`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(category),
     });
-    if (result) return { res: result };
-    return { error: "Can't update it" };
+    if (!response.ok) throw new Error('Failed adding category');
+    const data: TCategory = await response.json();
+    return { res: data };
   } catch (error) {
-    return {
-      error: JSON.stringify(error),
-    };
+    return { error: (error as Error).message };
   }
 };
 
-export const deleteCategory = async (id: string) => {
-  if (!id) return { error: "Can't delete it!" };
-
+export const updateCategory = async (
+  category: TCategory
+): Promise<{ res?: TCategory; error?: string }> => {
   try {
-    const hasParent = await db.category.findFirst({
-      where: {
-        parentID: id,
-      },
+    const response = await fetch(`${baseUrl}/categories/${category.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(category),
     });
-    if (!hasParent) {
-      const result = await db.category.delete({
-        where: {
-          id,
-        },
-      });
+    if (!response.ok) throw new Error('Failed updating category');
+    const data: TCategory = await response.json();
+    return { res: data };
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+};
 
-      if (!result) return { error: "Can't delete it!" };
-      return { res: JSON.stringify(result) };
-    }
-    return { error: "It has child!" };
-  } catch {
-    return { error: "Can't delete it!" };
+export const deleteCategory = async (
+  id: string
+): Promise<{ res?: any; error?: string }> => {
+  try {
+    const response = await fetch(`${baseUrl}/categories/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed deleting category');
+    return { res: true };
+  } catch (error) {
+    return { error: (error as Error).message };
   }
 };
