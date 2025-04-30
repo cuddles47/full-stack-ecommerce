@@ -1,22 +1,20 @@
 "use client";
 import { Provider } from "react-redux";
-
-import StoreNavBar from "@/domains/store/shared/components/navbar";
-import Warning from "@/domains/store/shared/components/warning";
-import { shoppingCartStore } from "@/store/shoppingCart";
-
-import StoreFooter from "../../domains/store/shared/components/footer/index";
+import { store } from "../../store";
+import Header from "../../components/layout/Header";
+import Footer from "../../components/layout/Footer";
+import Warning from "../../features/cart/components/Warning";
 
 const StoreLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <main className="bg-gray-50">
-      <Provider store={shoppingCartStore}>
-        <StoreNavBar />
+    <Provider store={store}>
+      <Header />
+      <main className="min-h-screen bg-gray-50 py-4">
         {children}
-        <StoreFooter />
-        <Warning />
-      </Provider>
-    </main>
+      </main>
+      <Footer />
+      <Warning />
+    </Provider>
   );
 };
 

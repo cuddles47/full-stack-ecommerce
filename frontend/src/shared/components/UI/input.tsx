@@ -1,4 +1,4 @@
-import { cn } from "@/shared/utils/styling";
+import { cn } from "@/core/utils/styling";
 
 type TProps = React.InputHTMLAttributes<HTMLInputElement> & {
   inputSize?: "sm" | "md" | "base" | "lg";

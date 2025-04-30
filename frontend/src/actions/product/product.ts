@@ -1,4 +1,4 @@
-import { TAddProductFormValues, TProductListItem } from "@/shared/types/product";
+import { TAddProductFormValues, TProductListItem, TProductPageInfo } from "@/shared/types/product";
 
 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
@@ -24,6 +24,33 @@ export const addProduct = async (
     });
     if (!response.ok) throw new Error('Failed adding product');
     const data = await response.json();
+    return { res: data };
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+};
+
+export const deleteProduct = async (
+  id: string
+): Promise<{ res?: boolean; error?: string }> => {
+  try {
+    const response = await fetch(`${baseUrl}/products/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed deleting product');
+    return { res: true };
+  } catch (error) {
+    return { error: (error as Error).message };
+  }
+};
+
+export const getOneProduct = async (
+  id: string
+): Promise<{ res?: TProductPageInfo; error?: string }> => {
+  try {
+    const response = await fetch(`${baseUrl}/products/${id}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error('Failed fetching product');
+    const data: TProductPageInfo = await response.json();
     return { res: data };
   } catch (error) {
     return { error: (error as Error).message };

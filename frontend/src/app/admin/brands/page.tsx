@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Button from "@/shared/components/UI/button";
 import Input from "@/shared/components/UI/input";
 import Popup from "@/shared/components/UI/popup";
-import { TBrand } from "@/shared/types";
+import { TBrand } from "@/shared/types/brands";
+import { getAllBrands, addBrand, updateBrand, deleteBrand } from "@/actions/brand/brand";
 
 let selectedBrandID = "";
 const Brand = () => {

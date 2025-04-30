@@ -60,3 +60,5 @@ export const deleteCategory = async (
     return { error: (error as Error).message };
   }
 };
+
+export type TGetAllCategories = TCategory;

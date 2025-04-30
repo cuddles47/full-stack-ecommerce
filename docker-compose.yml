@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: kiwey-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    networks:
+      - kiwey-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: kiwey-backend
+    restart: always
+    depends_on:
+      - mongodb
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGODB_URI=mongodb://admin:password@mongodb:27017/kiwey?authSource=admin
+      - JWT_SECRET=your_jwt_secret_key_here
+      - JWT_EXPIRY=7d
+      - CORS_ORIGIN=http://localhost:3000
+    networks:
+      - kiwey-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: kiwey-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:3001
+      - DATABASE_URL=mongodb://admin:password@mongodb:27017/kiwey?authSource=admin
+    networks:
+      - kiwey-network
+
+networks:
+  kiwey-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

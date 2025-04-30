@@ -1,0 +1,241 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches: [ main, develop, 'feature/*', 'release/*' ]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-ci.yml'
+
+jobs:
+  test:
+    name: Test Frontend
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install Dependencies
+        working-directory: ./frontend
+        run: npm ci
+      
+      - name: Check Code Style
+        working-directory: ./frontend
+        run: npm run lint
+      
+      - name: Run Unit Tests
+        working-directory: ./frontend
+        run: npm run test:ci
+      
+      - name: Run Component Tests
+        working-directory: ./frontend
+        run: npm run test:ci -- --testPathPattern=src/components
+      
+      - name: Run Feature Tests
+        working-directory: ./frontend
+        run: npm run test:ci -- --testPathPattern=src/features
+      
+      - name: Check Bundle Size
+        working-directory: ./frontend
+        run: |
+          npm install -g bundlesize
+          bundlesize
+      
+      - name: Upload Test Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage
+          retention-days: 14
+  
+  build:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    needs: test
+    if: success() && (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/')))
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      
+      - name: Install Dependencies
+        working-directory: ./frontend
+        run: npm ci
+      
+      - name: Create Production Build
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL || 'https://api.kiwey.example.com' }}
+      
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/.next
+          retention-days: 7
+      
+      - name: Create Build Info File
+        working-directory: ./frontend
+        run: |
+          echo "{\"build\": {\"version\": \"$(node -p "require('./package.json').version")\", \"timestamp\": \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\", \"commit\": \"${{ github.sha }}\", \"branch\": \"${GITHUB_REF#refs/heads/}\"}}" > .next/BUILD_INFO.json
+  
+  deploy-canary:
+    name: Deploy Canary Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: success() && github.event_name == 'push' && (github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/'))
+    environment: canary
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/.next
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Extract branch name
+        shell: bash
+        run: echo "BRANCH_NAME=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
+      
+      - name: Build and push canary image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/kiwey-frontend:canary-${{ env.BRANCH_NAME }}
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=canary-${{ env.BRANCH_NAME }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            COMMIT_SHA=${{ github.sha }}
+            APP_VERSION=canary-${{ env.BRANCH_NAME }}
+      
+      - name: Deploy Canary to Kubernetes
+        uses: Azure/k8s-deploy@v4
+        with:
+          manifests: |
+            ./kubernetes/frontend-canary.yaml
+          images: |
+            ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/kiwey-frontend:canary-${{ env.BRANCH_NAME }}
+          kubectl-version: 'latest'
+          namespace: kiwey-canary
+          strategy: canary
+          percentage: 20
+          route-method: header
+          route-value: 'canary=true'
+      
+      - name: Create Deployment Status
+        uses: bobheadxi/deployments@v1.4.0
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          env: canary
+          status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: https://canary.kiwey.example.com
+  
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: success() && github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/.next
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Login to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.DOCKER_REGISTRY }}
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
+      - name: Build and push production image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/kiwey-frontend:latest
+            ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/kiwey-frontend:${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.html_url }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }}
+            COMMIT_SHA=${{ github.sha }}
+            APP_VERSION=${{ github.sha }}
+      
+      - name: Deploy to Production
+        uses: Azure/k8s-deploy@v4
+        with:
+          manifests: |
+            ./kubernetes/frontend.yaml
+          images: |
+            ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/kiwey-frontend:${{ github.sha }}
+          kubectl-version: 'latest'
+          namespace: kiwey-production
+          strategy: blue-green
+          traffic-split-method: pod
+          promote: auto
+          promote-delay: 120s
+      
+      - name: Notify Deployment Status
+        if: always()
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_TITLE: Frontend Deployment Status
+          SLACK_MESSAGE: ${{ job.status == 'success' && 'Production deployment succeeded! :rocket:' || 'Production deployment failed! :x:' }}
+          SLACK_COLOR: ${{ job.status == 'success' && 'good' || 'danger' }}
+          SLACK_FOOTER: "commit: ${{ github.sha }}"
