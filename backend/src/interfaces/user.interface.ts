@@ -1,7 +1,6 @@
 import { Types } from "mongoose";
 
 export interface IDetailUser {
-  user_code: string;
   name: string;
   avatar?: string;
   dob?: Date;
@@ -10,7 +9,7 @@ export interface IDetailUser {
 }
 
 export interface IUser {
-  // _id: Types.ObjectId;
+  _id: Types.ObjectId;
   username: string;
   email: string; // Added email field
   password: string;

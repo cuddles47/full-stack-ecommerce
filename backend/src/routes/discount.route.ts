@@ -1,6 +1,6 @@
 import { Router } from "express";
 import discountController from "../controllers/discount.controller";
-import { authMiddleware } from "../middleware/auth.middleware";
+import authMiddleware from "../middleware/auth.middleware";
 import { permissionMiddleware } from "../middleware/permission.middleware";
 import { validateCreateDiscount, validateUpdateDiscount, validateApplyDiscount } from "../validation/discount.validation";
 

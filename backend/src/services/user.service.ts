@@ -72,7 +72,7 @@ export class UserService {
 
         const filter = buildSearchFilter(
             search,
-            ["username", "detail_user.user_code", "detail_user.name"],
+            ["username", "detail_user.name"],
             { roles, status }
         );
 
@@ -158,7 +158,6 @@ export class UserService {
             return {
                 id: userData._id,
                 username: userData.username,
-                user_code: userData.detail_user.user_code,
                 status: userData.status ? 'Hoạt động' : 'Không hoạt động',
                 name: userData.detail_user.name,
                 dob: formatDate(userData.detail_user.dob, false),
@@ -176,7 +175,6 @@ export class UserService {
         const fields = [
             { label: 'ID', value: 'id' },
             { label: 'Tên tài khoản', value: 'username' },
-            { label: 'Mã nhân sự', value: 'user_code' },
             { label: 'Trạng thái', value: 'status' },
             { label: 'Tên', value: 'name' },
             { label: 'Ảnh đại diện', value: 'avatar' },

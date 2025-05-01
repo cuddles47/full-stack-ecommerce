@@ -14,7 +14,6 @@ export const CreateUserSchema = object({
   ),
   roles: array(string()).min(1, "Ít nhất một vai trò!"),
   detail_user: object({
-    user_code: string({ required_error: "Mã tài khoản là bắt buộc!" }),
     name: string({ required_error: "Tên là bắt buộc!" }),
     dob: coerce.date().optional(),
     address: string().optional(),
@@ -27,7 +26,6 @@ export const UpdateUserSchema = object({
   password: string().min(6, "Mật khẩu phải có ít nhất 6 ký tự!").optional(),
   roles: array(string()).min(1, "Ít nhất một vai trò!").optional(),
   detail_user: object({
-    user_code: string().optional(),
     name: string().optional(),
     dob: coerce.date().optional(),
     address: string().optional(),

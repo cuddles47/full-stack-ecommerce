@@ -16,7 +16,6 @@ export const RegisterUserSchema = z.object({
         .min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
     confirmPassword: z.string({ required_error: "Vui lòng xác nhận mật khẩu" }),
     detail_user: z.object({
-        user_code: z.string({ required_error: "Mã nhân sự là bắt buộc!" }),
         name: z.string({ required_error: "Tên là bắt buộc!" }),
         gender: z.nativeEnum(Gender, { required_error: "Giới tính là bắt buộc!" }),
     }),

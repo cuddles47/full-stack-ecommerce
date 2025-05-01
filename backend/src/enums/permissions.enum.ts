@@ -29,4 +29,37 @@ export enum Permissions {
 
     // Access History Resources
     LIST_ALL_ACCESS_HISTORY = "access_history.list_all",
+    
+    // Banner Resources
+    LIST_ALL_BANNERS = "banner.list_all",
+    GET_BANNER = "banner.get",
+    ADD_BANNER = "banner.add",
+    EDIT_BANNER = "banner.edit",
+    DELETE_BANNER = "banner.delete",
+    CHANGE_STATUS_BANNER = "banner.change_status",
+    
+    // Product Resources
+    LIST_ALL_PRODUCTS = "product.list_all",
+    GET_PRODUCT = "product.get",
+    ADD_PRODUCT = "product.add",
+    EDIT_PRODUCT = "product.edit", 
+    DELETE_PRODUCT = "product.delete",
+    CHANGE_STATUS_PRODUCT = "product.change_status",
+    
+    // Cart Resources
+    LIST_ALL_CARTS = "cart.list_all",
+    GET_CART = "cart.get",
+    ADD_CART_ITEM = "cart.add_item",
+    EDIT_CART_ITEM = "cart.edit_item",
+    REMOVE_CART_ITEM = "cart.remove_item",
+    CLEAR_CART = "cart.clear",
+    
+    // Discount Resources
+    LIST_ALL_DISCOUNTS = "discount.list_all",
+    GET_DISCOUNT = "discount.get",
+    ADD_DISCOUNT = "discount.add",
+    EDIT_DISCOUNT = "discount.edit",
+    DELETE_DISCOUNT = "discount.delete",
+    CHANGE_STATUS_DISCOUNT = "discount.change_status",
+    APPLY_DISCOUNT = "discount.apply",
 }

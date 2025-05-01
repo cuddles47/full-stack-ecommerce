@@ -1,0 +1,1213 @@
+{
+	"info": {
+		"_postman_id": "1c5e3376-3853-4c52-a2c5-f9f9e75d6d84",
+		"name": "Kiwey API Tests",
+		"description": "Collection for testing the Kiwey Fullstack API endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has access token\", function () {",
+									"    pm.expect(response).to.have.property('accessToken');",
+									"    pm.expect(response.accessToken).to.be.a('string').and.not.empty;",
+									"    pm.collectionVariables.set('accessToken', response.accessToken);",
+									"});",
+									"",
+									"pm.test(\"Response has refresh token\", function () {",
+									"    pm.expect(response).to.have.property('refreshToken');",
+									"    pm.expect(response.refreshToken).to.be.a('string').and.not.empty;",
+									"    pm.collectionVariables.set('refreshToken', response.refreshToken);",
+									"});",
+									"",
+									"pm.test(\"Response has user data\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('object');",
+									"    pm.expect(response.data).to.have.property('userId');",
+									"    pm.collectionVariables.set('userId', response.data.userId);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"admin@example.com\",\n    \"password\": \"Admin123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Authenticate user and get access token"
+					},
+					"response": []
+				},
+				{
+					"name": "Me",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has user data\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('object');",
+									"    pm.expect(response.data).to.have.property('userId');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/auth/me",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						},
+						"description": "Get current user information"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has new access token\", function () {",
+									"    pm.expect(response).to.have.property('accessToken');",
+									"    pm.expect(response.accessToken).to.be.a('string').and.not.empty;",
+									"    pm.collectionVariables.set('accessToken', response.accessToken);",
+									"});",
+									"",
+									"pm.test(\"Response has new refresh token\", function () {",
+									"    pm.expect(response).to.have.property('refreshToken');",
+									"    pm.expect(response.refreshToken).to.be.a('string').and.not.empty;",
+									"    pm.collectionVariables.set('refreshToken', response.refreshToken);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/refresh-token",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"refresh-token"
+							]
+						},
+						"description": "Get new access token using refresh token"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 205\", function () {",
+									"    pm.response.to.have.status(205);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout user and invalidate tokens"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Banners",
+			"item": [
+				{
+					"name": "Get Active Banners",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has data array\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Banner items have required fields\", function () {",
+									"    const response = pm.response.json();",
+									"    ",
+									"    if(response.data && response.data.length > 0) {",
+									"        const firstItem = response.data[0];",
+									"        pm.expect(firstItem).to.have.property('id');",
+									"        pm.expect(firstItem).to.have.property('title');",
+									"        pm.expect(firstItem).to.have.property('subtitle');",
+									"        pm.expect(firstItem).to.have.property('description');",
+									"        pm.expect(firstItem).to.have.property('buttonText');",
+									"        pm.expect(firstItem).to.have.property('buttonLink');",
+									"        pm.expect(firstItem).to.have.property('imagePath');",
+									"        pm.expect(firstItem).to.have.property('bgColor');",
+									"        pm.expect(firstItem).to.have.property('active');",
+									"        pm.expect(firstItem.active).to.be.true;",
+									"    }",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/banners/active",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"banners",
+								"active"
+							]
+						},
+						"description": "Get all active banners for display"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Banners",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has data array\", function () {",
+									"    const response = pm.response.json();",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/banners",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"banners"
+							]
+						},
+						"description": "Get all banners (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Banner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has banner data\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('object');",
+									"});",
+									"",
+									"pm.test(\"Banner has correct data\", function () {",
+									"    const banner = response.data;",
+									"    pm.expect(banner).to.have.property('id');",
+									"    pm.expect(banner.title).to.equal(\"Test Banner\");",
+									"    pm.expect(banner.subtitle).to.equal(\"Test Subtitle\");",
+									"    pm.expect(banner.active).to.be.true;",
+									"    ",
+									"    // Store banner ID for later tests",
+									"    if (banner.id) {",
+									"        pm.collectionVariables.set('bannerTestId', banner.id);",
+									"    }",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Banner\",\n    \"subtitle\": \"Test Subtitle\",\n    \"description\": \"This is a test banner description\",\n    \"buttonText\": \"Click Here\",\n    \"buttonLink\": \"/test-banner\",\n    \"imagePath\": \"/images/test-banner.png\",\n    \"bgColor\": \"from-green-900 to-green-700\",\n    \"active\": true,\n    \"position\": 3\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/banners",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"banners"
+							]
+						},
+						"description": "Create a new banner"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Banner by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has banner data\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('object');",
+									"});",
+									"",
+									"pm.test(\"Banner ID matches requested ID\", function () {",
+									"    const bannerId = pm.collectionVariables.get('bannerTestId');",
+									"    pm.expect(response.data.id).to.equal(bannerId);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/banners/{{bannerTestId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"banners",
+								"{{bannerTestId}}"
+							]
+						},
+						"description": "Get a specific banner by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Banner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Banner has updated data\", function () {",
+									"    const banner = response.data;",
+									"    pm.expect(banner.title).to.equal(\"Updated Banner Title\");",
+									"    pm.expect(banner.description).to.equal(\"This is an updated description\");",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Banner Title\",\n    \"description\": \"This is an updated description\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/banners/{{bannerTestId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"banners",
+								"{{bannerTestId}}"
+							]
+						},
+						"description": "Update an existing banner"
+					},
+					"response": []
+				},
+				{
+					"name": "Change Banner Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Banner status is changed to false\", function () {",
+									"    const banner = response.data;",
+									"    pm.expect(banner.active).to.be.false;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"active\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/banners/{{bannerTestId}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"banners",
+								"{{bannerTestId}}",
+								"status"
+							]
+						},
+						"description": "Change the active status of a banner"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Banner",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has deleted banner data\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('object');",
+									"});",
+									"",
+									"pm.test(\"Deleted banner ID matches requested ID\", function () {",
+									"    const bannerId = pm.collectionVariables.get('bannerTestId');",
+									"    pm.expect(response.data.id).to.equal(bannerId);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/banners/{{bannerTestId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"banners",
+								"{{bannerTestId}}"
+							]
+						},
+						"description": "Delete a banner"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "Get All Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has data array\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Store a product ID for later tests\", function () {",
+									"    if (response.data && response.data.length > 0) {",
+									"        pm.collectionVariables.set('productTestId', response.data[0].id);",
+									"    }",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/products",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products"
+							]
+						},
+						"description": "Get all products (admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has data array\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/active",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"active"
+							]
+						},
+						"description": "Get active products (public)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Product by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has product data\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('object');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products/{{productTestId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"products",
+								"{{productTestId}}"
+							]
+						},
+						"description": "Get product details by ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "Get Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has cart data\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cart",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart"
+							]
+						},
+						"description": "Get current user's cart"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Item to Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has cart data with items\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.have.property('items');",
+									"    pm.expect(response.data.items).to.be.an('array');",
+									"    pm.expect(response.data.items.length).to.be.greaterThan(0);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"productId\": \"{{productTestId}}\",\n    \"quantity\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cart/item",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart",
+								"item"
+							]
+						},
+						"description": "Add an item to the user's cart"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Item Quantity",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Quantity for product has been updated\", function () {",
+									"    const productId = pm.collectionVariables.get('productTestId');",
+									"    const items = response.data.items;",
+									"    ",
+									"    const updatedItem = items.find(item => item.product.toString() === productId);",
+									"    if (updatedItem) {",
+									"        pm.expect(updatedItem.quantity).to.equal(2);",
+									"    }",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cart/item/{{productTestId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart",
+								"item",
+								"{{productTestId}}"
+							]
+						},
+						"description": "Update the quantity of an item in the cart"
+					},
+					"response": []
+				},
+				{
+					"name": "Remove Item from Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Item has been removed from cart\", function () {",
+									"    const productId = pm.collectionVariables.get('productTestId');",
+									"    const items = response.data.items;",
+									"    ",
+									"    const foundItem = items.find(item => item.product.toString() === productId);",
+									"    pm.expect(foundItem).to.be.undefined;",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cart/item/{{productTestId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart",
+								"item",
+								"{{productTestId}}"
+							]
+						},
+						"description": "Remove an item from the cart"
+					},
+					"response": []
+				},
+				{
+					"name": "Clear Cart",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Cart has no items\", function () {",
+									"    pm.expect(response.data.items).to.be.an('array');",
+									"    pm.expect(response.data.items.length).to.equal(0);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/cart",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"cart"
+							]
+						},
+						"description": "Clear all items from the cart"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Get All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has data array\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});",
+									"",
+									"pm.test(\"Response includes pagination info\", function () {",
+									"    pm.expect(response).to.have.property('total');",
+									"    pm.expect(response).to.have.property('page');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get all users with pagination"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Access History",
+			"item": [
+				{
+					"name": "Get Access History",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"const response = pm.response.json();",
+									"",
+									"pm.test(\"Response has success true\", function () {",
+									"    pm.expect(response).to.have.property('success');",
+									"    pm.expect(response.success).to.be.true;",
+									"});",
+									"",
+									"pm.test(\"Response has data array\", function () {",
+									"    pm.expect(response).to.have.property('data');",
+									"    pm.expect(response.data).to.be.an('array');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/access-history?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"access-history"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Get access history with pagination"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:3000/api",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "bannerTestId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "productTestId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
