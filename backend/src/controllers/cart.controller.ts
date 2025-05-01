@@ -2,9 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import { Types } from "mongoose";
 import cartService from "../services/cart.service";
 import BadRequestError from "../errors/bad-request.error";
+import { IUser } from "../interfaces/user.interface";
+
+// Extend the Express Request interface to include user
+interface AuthenticatedRequest extends Request {
+  user?: IUser;
+}
 
 class CartController {
-  async getCart(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getCart(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?._id;
       
@@ -23,7 +29,7 @@ class CartController {
     }
   }
 
-  async createOrUpdateCart(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async createOrUpdateCart(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?._id;
       const { items } = req.body;
@@ -43,7 +49,7 @@ class CartController {
     }
   }
 
-  async clearCart(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async clearCart(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?._id;
       
@@ -62,7 +68,7 @@ class CartController {
     }
   }
 
-  async addItemToCart(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async addItemToCart(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?._id;
       const item = req.body;
@@ -82,7 +88,7 @@ class CartController {
     }
   }
 
-  async removeItemFromCart(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async removeItemFromCart(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?._id;
       const { productId } = req.params;
@@ -106,7 +112,7 @@ class CartController {
     }
   }
 
-  async updateItemQuantity(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async updateItemQuantity(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId = req.user?._id;
       const { productId } = req.params;

@@ -1,26 +1,29 @@
-import { Types } from "mongoose";
+import { Types, Document } from "mongoose";
 import { ICart, ICartItem } from "../interfaces/cart";
 import Cart from "../models/cart";
-import BaseRepository from "./base.repository";
+import { BaseRepository } from "./base.repository";
+
+// Define a type that includes the Document methods like save()
+type CartDocument = Document & ICart;
 
 class CartRepository extends BaseRepository<ICart> {
   constructor() {
     super(Cart);
   }
 
-  async findByUserId(userId: string | Types.ObjectId): Promise<ICart | null> {
-    return this.model.findOne({ user: userId });
+  async findByUserId(userId: string | Types.ObjectId): Promise<CartDocument | null> {
+    return Cart.findOne({ user: userId });
   }
 
-  async createCart(userId: string | Types.ObjectId, items: ICartItem[]): Promise<ICart> {
-    const cart = new this.model({
+  async createCart(userId: string | Types.ObjectId, items: ICartItem[]): Promise<CartDocument> {
+    const cart = new Cart({
       user: userId,
       items: items
     });
     return await cart.save();
   }
 
-  async updateCart(userId: string | Types.ObjectId, items: ICartItem[]): Promise<ICart | null> {
+  async updateCart(userId: string | Types.ObjectId, items: ICartItem[]): Promise<CartDocument | null> {
     const cart = await this.findByUserId(userId);
     
     if (!cart) {
@@ -31,7 +34,7 @@ class CartRepository extends BaseRepository<ICart> {
     return await cart.save();
   }
 
-  async clearCart(userId: string | Types.ObjectId): Promise<ICart | null> {
+  async clearCart(userId: string | Types.ObjectId): Promise<CartDocument | null> {
     const cart = await this.findByUserId(userId);
     
     if (!cart) {
@@ -42,7 +45,7 @@ class CartRepository extends BaseRepository<ICart> {
     return await cart.save();
   }
 
-  async addItemToCart(userId: string | Types.ObjectId, item: ICartItem): Promise<ICart | null> {
+  async addItemToCart(userId: string | Types.ObjectId, item: ICartItem): Promise<CartDocument | null> {
     const cart = await this.findByUserId(userId);
     
     if (!cart) {
@@ -64,7 +67,7 @@ class CartRepository extends BaseRepository<ICart> {
     return await cart.save();
   }
 
-  async removeItemFromCart(userId: string | Types.ObjectId, productId: string | Types.ObjectId): Promise<ICart | null> {
+  async removeItemFromCart(userId: string | Types.ObjectId, productId: string | Types.ObjectId): Promise<CartDocument | null> {
     const cart = await this.findByUserId(userId);
     
     if (!cart) {
@@ -82,7 +85,7 @@ class CartRepository extends BaseRepository<ICart> {
     userId: string | Types.ObjectId, 
     productId: string | Types.ObjectId, 
     quantity: number
-  ): Promise<ICart | null> {
+  ): Promise<CartDocument | null> {
     const cart = await this.findByUserId(userId);
     
     if (!cart) {
